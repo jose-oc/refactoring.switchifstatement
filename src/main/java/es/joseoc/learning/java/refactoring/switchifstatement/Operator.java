@@ -1,10 +1,8 @@
 package es.joseoc.learning.java.refactoring.switchifstatement;
 
-import es.joseoc.learning.java.refactoring.switchifstatement.math.operation.AdditionExecutor;
-import es.joseoc.learning.java.refactoring.switchifstatement.math.operation.DivisionExecutor;
-import es.joseoc.learning.java.refactoring.switchifstatement.math.operation.MultiplicationExecutor;
+import es.joseoc.learning.java.refactoring.switchifstatement.math.operation.BinaryOperation;
 import es.joseoc.learning.java.refactoring.switchifstatement.math.operation.Operation;
-import es.joseoc.learning.java.refactoring.switchifstatement.math.operation.SubractionExecutor;
+import es.joseoc.learning.java.refactoring.switchifstatement.math.operation.factory.BinaryOperationFactory;
 
 /**
  * This class contains an example of Builder Pattern.
@@ -41,26 +39,8 @@ public final class Operator
 
 	public int performOperation() 
 	{
-		if (operation.equals(Operation.ADDITION)) 
-		{
-			AdditionExecutor adder = new AdditionExecutor(operand1, operand2);
-			return adder.execute();
-		} else if (operation.equals(Operation.SUBTRACTION)) 
-		{
-			SubractionExecutor subtracter = new SubractionExecutor(operand1, operand2);
-			return subtracter.execute();
-		} else if (operation.equals(Operation.MULTIPLICATION)) 
-		{
-			MultiplicationExecutor multiplier = new MultiplicationExecutor(operand1, operand2);
-			return multiplier.execute();
-		} else if (operation.equals(Operation.DIVISION)) 
-		{
-			DivisionExecutor div = new DivisionExecutor(operand1, operand2);
-			return div.execute();
-		} else 
-		{
-			throw new InvalidOperatorException(this);
-		}
+		BinaryOperation executor = BinaryOperationFactory.getInstance(operation);
+		return executor.execute(operand1, operand2);
 	}
 
 	public static final class OperatorBuilder
@@ -90,16 +70,6 @@ public final class Operator
 		public Operator prepareOperation() 
 		{
 			return new Operator(this);
-		}
-	}
-	
-	public static final class InvalidOperatorException extends RuntimeException 
-	{
-		private static final long serialVersionUID = -4559154624432136312L;
-
-		public InvalidOperatorException(Operator operator) 
-		{
-			super("Invalid operation: " + operator.operation);
 		}
 	}
 }

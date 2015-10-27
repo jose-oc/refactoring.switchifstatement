@@ -9,22 +9,22 @@ public class DivisionExecutorTest {
 	
 	@Test
 	public void testExecute() throws Exception {
-		DivisionExecutor executor = new DivisionExecutor(10, 2);
-		int actual = executor.execute();
+		DivisionExecutor executor = new DivisionExecutor();
+		int actual = executor.execute(10, 2);
 		assertEquals(5, actual);
 	}
 	
 	@Test
 	public void testExecuteWhenDivisorSmaller() throws Exception {
-		DivisionExecutor executor = new DivisionExecutor(10, 20);
-		int actual = executor.execute();
+		DivisionExecutor executor = new DivisionExecutor();
+		int actual = executor.execute(10, 20);
 		assertEquals(0, actual);
 	}
 
 	@Test(expected = ArithmeticException.class)
 	public void testExecuteWhenDivisorZero() throws Exception {
-		DivisionExecutor executor = new DivisionExecutor(10, 0);
-		int actual = executor.execute();
+		DivisionExecutor executor = new DivisionExecutor();
+		int actual = executor.execute(10, 0);
 		assertEquals(0, actual);
 	}
 

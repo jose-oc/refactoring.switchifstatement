@@ -9,17 +9,17 @@ public class AdditionExecutorTest {
 
 	@Test
 	public void testExecute() throws Exception {
-		AdditionExecutor executor = new AdditionExecutor(10, 0);
-		int actual = executor.execute();
+		AdditionExecutor executor = new AdditionExecutor();
+		int actual = executor.execute(10, 0);
 		assertEquals(10, actual);
 	}
 
 	@Test
 	public void testCommutative() throws Exception {
-		AdditionExecutor executor = new AdditionExecutor(10, 0);
-		int result1 = executor.execute();
-		executor = new AdditionExecutor(0, 10);
-		int result2 = executor.execute();
+		AdditionExecutor executor = new AdditionExecutor();
+		int result1 = executor.execute(10, 0);
+		executor = new AdditionExecutor();
+		int result2 = executor.execute(0, 10);
 		assertEquals(result1, result2);
 	}
 }
