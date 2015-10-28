@@ -1,6 +1,7 @@
 package es.joseoc.learning.java.refactoring.switchifstatement.math.operation.factory;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.reflections.Reflections;
@@ -13,7 +14,7 @@ import es.joseoc.learning.java.refactoring.switchifstatement.math.operation.Oper
 
 public final class BinaryOperationFactory {
 	private static final Logger LOG = LoggerFactory.getLogger(BinaryOperationFactory.class);	
-	private static final HashMap<Operation, Class<?>> registeredOperations = new HashMap<>(Operation.values().length);
+	private static final Map<Operation, Class<?>> registeredOperations = new HashMap<>(Operation.values().length);
 	
 	private final Operation operation;
 
