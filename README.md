@@ -40,7 +40,7 @@ Use a properties file to specify which class implements each operation. This way
 We can also add new operations just adding it to the properties file. 
 
 ## Step 4 
-### commit: 
+### commit: 6557c94589d5f690f55329d8ccf710d70a1a964b
 This step shows how we can register the classes to implements each operation automatically using instrospection. 
 I've created a new annotation to annotate the implementation of each operation specifying the type of operation to perform.
 Then, I've changed the factory class to scan all the implementations and store them on a map.
