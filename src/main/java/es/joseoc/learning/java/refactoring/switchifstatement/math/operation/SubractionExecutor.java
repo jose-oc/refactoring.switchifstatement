@@ -1,5 +1,6 @@
 package es.joseoc.learning.java.refactoring.switchifstatement.math.operation;
 
+@BinaryOperationExecutor(type = Operation.SUBTRACTION)
 public final class SubractionExecutor implements BinaryOperation 
 {
 	@Override

@@ -14,7 +14,6 @@ public final class PropertiesLoader {
 	private static final Logger LOG = LoggerFactory.getLogger(PropertiesLoader.class);
 	private final String fileName;
 	private final String systemPropertyName;
-//	private final String systemPropertyNameToPointADirectory;
 	private final Properties properties = new Properties();
 	
 	private PropertiesLoader(String fileName, String systemPropertyName) {

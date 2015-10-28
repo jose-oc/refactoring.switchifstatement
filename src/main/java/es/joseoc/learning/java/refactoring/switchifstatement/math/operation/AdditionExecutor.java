@@ -1,5 +1,6 @@
 package es.joseoc.learning.java.refactoring.switchifstatement.math.operation;
 
+@BinaryOperationExecutor(type = Operation.ADDITION)
 public final class AdditionExecutor implements BinaryOperation 
 {
 	@Override

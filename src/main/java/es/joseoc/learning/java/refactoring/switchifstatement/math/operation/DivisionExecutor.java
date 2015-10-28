@@ -1,5 +1,6 @@
 package es.joseoc.learning.java.refactoring.switchifstatement.math.operation;
 
+@BinaryOperationExecutor(type = Operation.DIVISION)
 public final class DivisionExecutor implements BinaryOperation 
 {
 	@Override

@@ -1,44 +1,62 @@
 package es.joseoc.learning.java.refactoring.switchifstatement.math.operation.factory;
 
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Set;
 
-import es.joseoc.learning.java.refactoring.switchifstatement.io.PropertiesLoader;
+import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import es.joseoc.learning.java.refactoring.switchifstatement.math.operation.BinaryOperation;
+import es.joseoc.learning.java.refactoring.switchifstatement.math.operation.BinaryOperationExecutor;
 import es.joseoc.learning.java.refactoring.switchifstatement.math.operation.Operation;
 
 public final class BinaryOperationFactory {
-	
-	private static final String PROPERTIES_NAME = "binary_operations.properties";
+	private static final Logger LOG = LoggerFactory.getLogger(BinaryOperationFactory.class);	
+	private static final HashMap<Operation, Class<?>> registeredOperations = new HashMap<>(Operation.values().length);
 	
 	private final Operation operation;
-	private final Properties props;
 
 	private BinaryOperationFactory(Operation operation) {
 		this.operation = operation;
-		this.props = PropertiesLoader.loadProperties(PROPERTIES_NAME).getProperties();
 	}
 
 	public static BinaryOperation getInstance(Operation operation) {
-		BinaryOperationFactory factory = new BinaryOperationFactory(operation);
-		String clazzName = factory.readClassNameForOperation();
-		Class<?> clazz = factory.loadClass(clazzName);
-		return factory.createNewInstance(clazz);
-	}
-
-	private String readClassNameForOperation() {
-		String clazzName = props.getProperty(operation.name());
-		if (clazzName == null) {
+		init();
+		Class<?> binaryOperationClass = registeredOperations.get(operation);
+		if (binaryOperationClass != null) {
+			return new BinaryOperationFactory(operation).createNewInstance(binaryOperationClass);
+		} else {
 			throw new UnsupportedBinaryOperationException(operation);
 		}
-
-		return clazzName;
+	}
+	
+	private static void init() {
+		if (registeredOperations.isEmpty()) {
+			scanClasses();
+		}
 	}
 
-	private Class<?> loadClass(String clazzName) {
-		try {
-			return Class.forName(clazzName);
-		} catch (ClassNotFoundException e) {
-			throw new BinaryOperationClassNotFoundException(operation, clazzName, e);
+	private static void scanClasses() {
+		Set<Class<?>> classes = getClassesToExecuteMathOperations();
+		for (Class<?> clazz : classes) {
+			registerClass(clazz);
+		}
+	}
+
+	private static Set<Class<?>> getClassesToExecuteMathOperations() {
+		Reflections pathScanner = new Reflections("es.joseoc");
+		return pathScanner.getTypesAnnotatedWith(BinaryOperationExecutor.class);
+	}
+
+	private static void registerClass(Class<?> clazz) {
+		BinaryOperationExecutor annotation = clazz.getAnnotation(BinaryOperationExecutor.class);
+		Operation type = annotation.type();
+		if (registeredOperations.containsKey(type)) {
+			LOG.warn("BinaryOperation of type " + type.name() + " is already registered with the class " + clazz.getName());
+		} else {
+			LOG.debug("New BinaryOperation registered. Operation type: " + type.name() + "; Class: " + clazz.getName());
+			registeredOperations.put(type, clazz);
 		}
 	}
 
@@ -49,7 +67,12 @@ public final class BinaryOperationFactory {
 			throw new BinaryOperationCreateNewInstanceException(operation, clazz, e);
 		}
 	}
-	
+
+	public static Set<Operation> getSupportedOperations() {
+		init();
+		return registeredOperations.keySet();
+	}
+
 	public static final class UnsupportedBinaryOperationException extends RuntimeException 
 	{
 		private static final long serialVersionUID = -4559154624432136312L;
@@ -57,9 +80,8 @@ public final class BinaryOperationFactory {
 
 		public UnsupportedBinaryOperationException(Operation operation) 
 		{
-			super("Unsupported operation: " + operation + "\nTo support it you need to add the operation to the file "
-					+ PROPERTIES_NAME + " and associate it with the class which implements "
-					+ BinaryOperation.class.getSimpleName());
+			super("Unsupported operation: " + operation + "\nTo support it you need to add a new class annotated with "
+					+ BinaryOperationExecutor.class.getSimpleName() + " and specify the type of operation it implements.");
 			this.operation = operation;
 		}
 
@@ -67,30 +89,7 @@ public final class BinaryOperationFactory {
 			return operation;
 		}
 	}
-	
-	public static final class BinaryOperationClassNotFoundException extends RuntimeException 
-	{
-		private static final long serialVersionUID = -9109575107489500443L;
-		private final Operation operation;
-		private final String classname;
 
-		public BinaryOperationClassNotFoundException(Operation operation, String classname, Exception e) 
-		{
-			super("Configuration error: error loading the class " + classname
-					+ " which is the implementation defined to use as " + BinaryOperation.class.getSimpleName()
-					+ " for the operation " + operation + ". Please, check if the class exists.", e);
-			this.operation = operation;
-			this.classname = classname;
-		}
-
-		public Operation getOperation() {
-			return operation;
-		}
-
-		public String getClassname() {
-			return classname;
-		}
-	}
 
 	public static final class BinaryOperationCreateNewInstanceException extends RuntimeException 
 	{
