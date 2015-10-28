@@ -29,3 +29,10 @@ The project works properly using an if statement like this one:
 We'll work on doing the same with a better code.
 
 At this moment we're using a Builder Pattern on `Operator` class using an inner class as the builder.
+
+## Step 2
+The if shown above has been moved to a factory class in order to create the object which executes the operation. These objects implement a new interface in order to the factory returns the same type of object. 
+
+## Step 3
+Use a properties file to specify which class implements each operation. This way we can change the behaviour without having to compile and deploy, just changing the properties file. 
+We can also add new operations just adding it to the properties file. 
