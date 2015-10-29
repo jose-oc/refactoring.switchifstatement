@@ -6,17 +6,22 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
+import org.reflections.Reflections;
 
 import es.joseoc.learning.java.refactoring.switchifstatement.math.operation.AdditionExecutor;
 import es.joseoc.learning.java.refactoring.switchifstatement.math.operation.BinaryOperation;
-import es.joseoc.learning.java.refactoring.switchifstatement.math.operation.BinaryOperationExecutor;
 import es.joseoc.learning.java.refactoring.switchifstatement.math.operation.Operation;
 import es.joseoc.learning.java.refactoring.switchifstatement.math.operation.factory.BinaryOperationFactory.BinaryOperationCreateNewInstanceException;
 import es.joseoc.learning.java.refactoring.switchifstatement.math.operation.factory.BinaryOperationFactory.UnsupportedBinaryOperationException;
 
 public class BinaryOperationFactoryTest {
+	
+	@Before
+	public void initialize() {
+		BinaryOperationFactory.clearCache();
+	}
 
 	@Test
 	public void testGetSupportedOperations() throws Exception {
@@ -32,23 +37,20 @@ public class BinaryOperationFactoryTest {
 	}
 
 	@Test(expected = UnsupportedBinaryOperationException.class)
-	@Ignore
-	public void whenUnsupportedOperationShouldRaiseException() throws Exception {
-		//BinaryOperationFactory.getInstance(Operation.ANOTHER_OPERATION);
-		/*
-		 * to test this case I'll need to add a new item to the Operation enum and not to write any 
-		 * implementation for that operation.
-		 */
+	public void whenNullOperationShouldRaiseException() throws Exception {
+		BinaryOperationFactory.getInstance(null);
 	}
-	
+
 	@Test(expected = BinaryOperationCreateNewInstanceException.class)
 	public void whenClassNonInstantiableShouldRaiseException() throws Exception {
-		BinaryOperationFactory.getInstance(Operation.DIVISION);
+		Reflections classScanner = new Reflections("es.joseoc.learning.java.refactoring.switchifstatement.math.operation.mock");
+		BinaryOperationFactory.getInstance(Operation.DIVISION, classScanner);
 	}
 
-	@BinaryOperationExecutor(type=Operation.DIVISION)
-	public static abstract class AbstractMockClass {
+	@Test(expected = UnsupportedBinaryOperationException.class)
+	public void whenUnsupportedOperationShouldRaiseException() throws Exception {
+		Reflections classScanner = new Reflections("es.joseoc.learning.java.refactoring.switchifstatement.math.operation.mock");
+		BinaryOperationFactory.getInstance(Operation.MULTIPLICATION, classScanner);
+	}
 		
-	}
-
 }
